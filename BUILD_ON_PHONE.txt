@@ -1,0 +1,14 @@
+BUILD IT FROM YOUR PHONE
+
+1. Create a GitHub repository named ImposterParty.
+2. Upload the contents of this folder to the repository.
+3. Open the repository's Actions tab.
+4. Select "Build Imposter Party APK".
+5. Press "Run workflow".
+6. Wait for the green check.
+7. Open the completed workflow run.
+8. Under Artifacts, download "ImposterParty-debug".
+9. Extract it and tap app-debug.apk on your Android phone.
+10. If Android asks, allow your browser/file manager to install unknown apps.
+
+No Android Studio is required for this route.

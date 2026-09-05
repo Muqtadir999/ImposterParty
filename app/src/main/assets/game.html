@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Imposter Party</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#07111f;color:#f5f7fb;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+.app{max-width:520px;margin:auto;min-height:100vh;padding:22px 18px 30px;background:linear-gradient(180deg,#0a1628,#07111f)}
+h1{font-size:42px;letter-spacing:-2px;margin:10px 0 4px}.sub{color:#9eabc0;margin-bottom:24px}
+.card{background:#101e31;border:1px solid #263750;border-radius:20px;padding:18px;margin:12px 0;box-shadow:0 8px 28px #0003}
+button,input{font:inherit}button{border:0;border-radius:15px;padding:14px 17px;background:#2b7cff;color:white;font-weight:800;cursor:pointer;width:100%;margin-top:9px}
+button.secondary{background:#1a2a40}button.danger{background:#b93549}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mode{padding:16px;border:1px solid #31435e;border-radius:16px;background:#0d1a2c;text-align:left}.mode.active{border-color:#4b91ff;background:#10284b}
+.mode b{display:block;font-size:16px}.mode span{display:block;color:#9eabc0;font-size:12px;margin-top:5px}
+input{width:100%;padding:14px;border-radius:13px;border:1px solid #33465f;background:#091525;color:white;outline:none}
+.row{display:flex;gap:8px;align-items:center}.row input{flex:1}.pill{display:inline-block;padding:6px 10px;background:#172944;border-radius:99px;color:#b9c9df;font-size:12px;margin:3px}
+.hidden{display:none}.big{text-align:center;padding:36px 12px}.word{font-size:44px;font-weight:900;margin:22px 0}.role{font-size:22px;font-weight:900}.timer{font-size:58px;font-weight:900;text-align:center;margin:25px}.player{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #203149}.player:last-child{border:0}.x{width:auto;padding:7px 11px;margin:0;background:#25364f}
+.small{font-size:13px;color:#9eabc0}.count{font-weight:900}.pack{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid #2b3c55;border-radius:14px;margin:8px 0;cursor:pointer}.pack.selected{border-color:#4b91ff;background:#10284b}.check{margin-left:auto}
+</style>
+</head>
+<body><main class="app" id="app"></main>
+<script>
+const PACKS={"Animals": [["Dog", "Wolf"], ["Cat", "Lynx"], ["Lion", "Tiger"], ["Elephant", "Rhinoceros"], ["Penguin", "Puffin"], ["Dolphin", "Porpoise"], ["Giraffe", "Okapi"], ["Zebra", "Donkey"], ["Kangaroo", "Wallaby"], ["Octopus", "Squid"], ["Chameleon", "Iguana"], ["Flamingo", "Pelican"], ["Panda", "Koala"], ["Cheetah", "Leopard"], ["Crocodile", "Alligator"], ["Peacock", "Turkey"], ["Owl", "Eagle"], ["Shark", "Ray"], ["Butterfly", "Moth"], ["Axolotl", "Salamander"]], "Food": [["Pizza", "Burger"], ["Sushi", "Sashimi"], ["Biryani", "Pulao"], ["Pasta", "Noodles"], ["Taco", "Burrito"], ["Pancake", "Waffle"], ["Ice Cream", "Gelato"], ["Donut", "Bagel"], ["Chocolate", "Brownie"], ["Popcorn", "Nachos"], ["Sandwich", "Wrap"], ["Fries", "Wedges"], ["Mango", "Papaya"], ["Watermelon", "Cantaloupe"], ["Cheesecake", "Tiramisu"]], "Movies": [["Titanic", "Avatar"], ["Inception", "Interstellar"], ["The Matrix", "Blade Runner"], ["Jaws", "Jurassic Park"], ["Gladiator", "Troy"], ["Frozen", "Moana"], ["The Lion King", "The Jungle Book"], ["Toy Story", "Cars"], ["The Dark Knight", "Batman Begins"], ["Harry Potter", "The Lord of the Rings"]], "Anime": [["Naruto", "Sasuke"], ["Goku", "Vegeta"], ["Luffy", "Zoro"], ["Gojo", "Sukuna"], ["Tanjiro", "Zenitsu"], ["Eren", "Mikasa"], ["Deku", "Bakugo"], ["Pikachu", "Eevee"], ["Itachi", "Madara"], ["Kakashi", "Jiraiya"], ["Frieza", "Cell"], ["Beerus", "Whis"]], "Video Games": [["Minecraft", "Terraria"], ["Mario", "Luigi"], ["Fortnite", "PUBG"], ["GTA", "Watch Dogs"], ["Among Us", "Goose Goose Duck"], ["Zelda", "Skyrim"], ["Sonic", "Crash Bandicoot"], ["Roblox", "Minecraft"], ["Pokémon", "Digimon"], ["Call of Duty", "Battlefield"]], "Sports": [["Cricket", "Baseball"], ["Football", "Rugby"], ["Basketball", "Volleyball"], ["Tennis", "Badminton"], ["Golf", "Hockey"], ["Boxing", "MMA"], ["Wrestling", "Judo"], ["Formula 1", "NASCAR"], ["Olympics", "Commonwealth Games"]], "Countries": [["India", "Pakistan"], ["Japan", "South Korea"], ["France", "Italy"], ["Brazil", "Argentina"], ["USA", "Canada"], ["Australia", "New Zealand"], ["Egypt", "Morocco"], ["Germany", "Austria"], ["Spain", "Portugal"], ["China", "Japan"]], "Technology": [["iPhone", "Samsung Galaxy"], ["Laptop", "Tablet"], ["Keyboard", "Piano"], ["Wi-Fi", "Bluetooth"], ["YouTube", "Netflix"], ["Google", "Bing"], ["PlayStation", "Xbox"], ["Headphones", "Earbuds"], ["Camera", "Camcorder"], ["Robot", "Drone"]], "Superheroes": [["Superman", "Homelander"], ["Batman", "Iron Man"], ["Spider-Man", "The Flash"], ["Thor", "Wonder Woman"], ["Hulk", "Juggernaut"], ["Aquaman", "Namor"], ["Captain America", "Winter Soldier"], ["Wolverine", "Deadpool"], ["Doctor Strange", "Doctor Fate"]], "Space": [["Moon", "Mars"], ["Sun", "Star"], ["Galaxy", "Nebula"], ["Black Hole", "Wormhole"], ["Astronaut", "Cosmonaut"], ["Rocket", "Space Shuttle"], ["Comet", "Asteroid"], ["Saturn", "Jupiter"], ["Earth", "Venus"]], "Cars": [["Ferrari", "Lamborghini"], ["BMW", "Mercedes"], ["Toyota", "Honda"], ["Tesla", "Rivian"], ["Mustang", "Camaro"], ["Jeep", "Land Rover"], ["Porsche", "Maserati"], ["SUV", "Crossover"], ["Sedan", "Hatchback"]], "History": [["Alexander the Great", "Julius Caesar"], ["Cleopatra", "Nefertiti"], ["Napoleon", "Caesar"], ["Viking", "Samurai"], ["Pyramid", "Ziggurat"], ["Roman Empire", "Greek Empire"], ["World War I", "World War II"], ["Mughal Empire", "Ottoman Empire"]], "Mythology": [["Zeus", "Poseidon"], ["Thor", "Loki"], ["Hades", "Ares"], ["Medusa", "Siren"], ["Dragon", "Wyvern"], ["Phoenix", "Griffin"], ["Minotaur", "Centaur"], ["Vampire", "Werewolf"], ["Mermaid", "Siren"]], "School & College": [["Exam", "Assignment"], ["Professor", "Teacher"], ["Canteen", "Cafeteria"], ["Hostel", "Dormitory"], ["Library", "Bookstore"], ["Attendance", "Timetable"], ["Backbencher", "Frontbencher"], ["Laboratory", "Classroom"], ["Project", "Presentation"]], "Daily Life": [["Toothbrush", "Comb"], ["Bed", "Sofa"], ["Umbrella", "Raincoat"], ["Keys", "Wallet"], ["Phone", "Remote"], ["Alarm", "Timer"], ["Shower", "Bath"], ["Coffee", "Tea"], ["Backpack", "Suitcase"], ["Mirror", "Window"]], "Memes & Internet": [["Meme", "GIF"], ["Viral", "Trending"], ["Influencer", "Streamer"], ["Comment", "Reply"], ["Hashtag", "Mention"], ["Troll", "Hater"], ["Reaction", "Review"], ["DM", "Email"]]};
+let state={screen:'home',mode:'imposters',players:[],packs:[],timer:120,roleIndex:0,roles:[],word:null,imposterWord:null,starter:0,remaining:[],votes:{},result:null};
+
+function render(){const a=document.getElementById('app'); a.innerHTML=''; screens[state.screen](a)}
+function title(t,s=''){return `<h1>${t}</h1><div class="sub">${s}</div>`}
+function btn(t,fn,cls=''){return `<button class="${cls}" onclick="${fn}">${t}</button>`}
+function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+const screens={
+home(a){a.innerHTML=title('IMPOSTER PARTY','Offline social deduction');a.innerHTML+=`<div class="card"><div class="small">Three ways to play</div><h2>Find the liar. Survive the vote.</h2>${btn('START GAME',"go('setup')")}</div><div class="grid">${btn('TOPICS',"go('packs')",'secondary')}${btn('SCOREBOARD',"go('score')",'secondary')}</div>`},
+setup(a){a.innerHTML=title('SET UP','Choose a mode and players');
+a.innerHTML+=`<div class="grid">
+<div class="mode ${state.mode==='imposters'?'active':''}" onclick="mode('imposters')"><b>IMPOSTERS ONLY</b><span>1 imposter, related word</span></div>
+<div class="mode ${state.mode==='mrwhite'?'active':''}" onclick="mode('mrwhite')"><b>IMPOSTER + MR. WHITE</b><span>1 imposter + 1 Mr. White</span></div>
+<div class="mode ${state.mode==='chaos'?'active':''}" onclick="mode('chaos')"><b>CHAOS</b><span>Hidden roles; even the imposter doesn't know</span></div>
+</div>
+<div class="card"><b>PLAYERS (${state.players.length}/24)</b><div class="row" style="margin-top:10px"><input id="pname" placeholder="Player name"><button style="width:auto" onclick="addPlayer()">ADD</button></div>${state.players.map((p,i)=>`<div class="player"><span>${i+1}. ${esc(p)}</span><button class="x" onclick="removePlayer(${i})">×</button></div>`).join('')}</div>
+<div class="card"><b>DISCUSSION TIMER</b><div class="grid">${[60,120,180,300].map(x=>`<button class="${state.timer===x?'':'secondary'}" onclick="state.timer=${x};render()">${x/60} MIN</button>`).join('')}</div></div>
+${btn('SELECT TOPICS',"go('packs')")}${btn('START ROUND',"startRound()",'secondary')}`;
+},
+packs(a){let q=state.q||'';let list=Object.keys(PACKS).filter(x=>x.toLowerCase().includes(q.toLowerCase()));a.innerHTML=title('SELECT TOPICS','Mix as many packs as you want');
+a.innerHTML+=`<input value="${esc(q)}" oninput="state.q=this.value;render()" placeholder="Search topics..."><div class="small" style="margin:12px 0">${list.length} packs found</div>`;
+a.innerHTML+=list.map(p=>`<div class="pack ${state.packs.includes(p)?'selected':''}" onclick="togglePack('${p.replace(/'/g,"\\'")}')"><span>📦</span><b>${p}</b><span class="check">${state.packs.includes(p)?'✓':''}</span></div>`).join('');
+a.innerHTML+=btn(`CONTINUE (${state.packs.length} SELECTED)`,"go('setup')")},
+reveal(a){let p=state.players[state.roleIndex];let r=state.roles[state.roleIndex];let content;
+if(r.type==='civilian') content=`<div class="role">CIVILIAN</div><div class="small">Your secret word</div><div class="word">${esc(r.word)}</div>`;
+else if(r.type==='imposter') content=`<div class="role">IMPOSTER</div><div class="small">Your related word</div><div class="word">${esc(r.word)}</div>`;
+else if(r.type==='white') content=`<div class="role">MR. WHITE</div><div class="small">You have no word.</div><div class="word">?</div>`;
+else content=`<div class="role">PLAYER</div><div class="small">Your information</div><div class="word">${esc(r.word||'?')}</div>`;
+a.innerHTML=title('SECRET REVEAL',`Pass the phone to ${esc(p)}`)+`<div class="card big">${content}</div>${btn('HIDE & PASS',"nextReveal()")}`},
+start(a){a.innerHTML=title('DISCUSSION',`${esc(state.players[state.starter])} goes first`)+`<div class="card"><div class="timer" id="timer"></div><div class="small" style="text-align:center">Give clues one at a time. Do not say the secret word.</div></div>${btn('VOTE NOW',"go('vote')")}`;runTimer()},
+vote(a){let active=state.remaining; a.innerHTML=title('TIME TO VOTE','Choose one player to eliminate');
+a.innerHTML+=active.map(i=>`<button class="secondary" onclick="eliminate(${i})">${esc(state.players[i])}</button>`).join('')},
+guess(a){a.innerHTML=title(state.result.role==='white'?'MR. WHITE CAUGHT!':'IMPOSTER CAUGHT!', 'One chance to guess the secret word.');a.innerHTML+=`<div class="card"><input id="guess" placeholder="Enter your guess">${btn('GUESS',"submitGuess()")}</div>`},
+results(a){a.innerHTML=title(state.result.winner,'GAME OVER');a.innerHTML+=`<div class="card"><div class="small">SECRET WORD</div><div class="word">${esc(state.word)}</div><div class="small">IMPOSTER</div><h2>${state.roles.map((r,i)=>r.hidden?'':r.type==='imposter'?esc(state.players[i]):'').filter(Boolean).join(', ')||'—'}</h2>${state.mode==='mrwhite'||state.mode==='chaos'?`<div class="small">MR. WHITE</div><h2>${state.roles.map((r,i)=>r.type==='white'?esc(state.players[i]):'').filter(Boolean).join(', ')||'—'}</h2>`:''}</div>${btn('PLAY AGAIN',"startRound()")}${btn('NEW GAME',"go('setup')",'secondary')}${btn('HOME',"go('home')",'secondary')}`},
+score(a){a.innerHTML=title('SCOREBOARD','Local device only');a.innerHTML+=`<div class="card"><h2>Coming with round tracking</h2><div class="small">Wins and streaks will be stored locally in the final build.</div></div>${btn('BACK',"go('home')",'secondary')}`}
+};
+function go(s){state.screen=s;render()}
+function mode(m){state.mode=m;render()}
+function addPlayer(){let v=document.getElementById('pname').value.trim();if(v&&state.players.length<24&&!state.players.includes(v)){state.players.push(v);render()}}
+function removePlayer(i){state.players.splice(i,1);render()}
+function togglePack(p){let i=state.packs.indexOf(p);if(i<0)state.packs.push(p);else state.packs.splice(i,1);render()}
+function startRound(){
+if(state.players.length<(state.mode==='imposters'?3:4))return alert('Add more players for this mode.');
+if(!state.packs.length)return alert('Select at least one topic pack.');
+let pool=[];state.packs.forEach(p=>pool.push(...PACKS[p]));let pair=pool[Math.floor(Math.random()*pool.length)];
+state.word=pair[0];state.imposterWord=pair[1];state.starter=Math.floor(Math.random()*state.players.length);
+state.remaining=state.players.map((_,i)=>i);state.votes={};state.roleIndex=0;
+let n=state.players.length, imp=Math.floor(Math.random()*n), white=-1;
+if(state.mode!=='imposters') do{white=Math.floor(Math.random()*n)}while(white===imp);
+state.roles=state.players.map((_,i)=>{
+ if(state.mode==='chaos') {
+   if(i===white)return {type:'white',hidden:true};
+   if(i===imp)return {type:'imposter',hidden:true,word:state.word};
+ }
+ if(i===imp)return {type:'imposter',word:state.imposterWord};
+ if(i===white)return {type:'white'};
+ return {type:'civilian',word:state.word};
+});
+state.screen='reveal';render()
+}
+function nextReveal(){state.roleIndex++;if(state.roleIndex>=state.players.length)go('start');else render()}
+let interval;
+function runTimer(){clearInterval(interval);let end=Date.now()+state.timer*1000;function tick(){let s=Math.max(0,Math.ceil((end-Date.now())/1000));let el=document.getElementById('timer');if(el)el.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');if(s<=0)clearInterval(interval)}tick();interval=setInterval(tick,250)}
+function eliminate(i){
+state.result={role:state.roles[i].type,player:i};
+if(state.roles[i].type==='imposter'||state.roles[i].type==='white'){state.screen='guess';render();return}
+state.remaining=state.remaining.filter(x=>x!==i);
+if(checkWin())return;go('start')
+}
+function submitGuess(){let g=document.getElementById('guess').value.trim().toLowerCase();let correct=g===state.word.toLowerCase();
+if(correct){state.result.winner=state.result.role==='white'?'MR. WHITE WINS!':'IMPOSTERS WIN!';go('results');return}
+state.remaining=state.remaining.filter(x=>x!==state.result.player);if(checkWin())return;go('start')}
+function checkWin(){
+let aliveImp=state.remaining.some(i=>state.roles[i].type==='imposter'&&!state.roles[i].hidden);
+let aliveWhite=state.remaining.some(i=>state.roles[i].type==='white');
+let civilians=state.remaining.filter(i=>state.roles[i].type==='civilian').length;
+if(state.mode==='imposters'&&!aliveImp){state.result.winner='CIVILIANS WIN!';go('results');return true}
+if(state.mode!=='chaos'&&!aliveImp&&!aliveWhite){state.result.winner='CIVILIANS WIN!';go('results');return true}
+if(aliveImp && civilians<=1){state.result.winner='IMPOSTERS WIN!';go('results');return true}
+return false
+}
+render();
+</script></body></html>
